@@ -6,13 +6,11 @@ namespace Itmo.ObjectOrientedProgramming.Lab4.Parsers.CommandHandlers.FileOperat
 
 public class FileMoveHandler : CommandHandlerBase<CommandRequest>
 {
-    private readonly ICommandHandler<CommandRequest> _nextHandler;
     private readonly CurrentPath _currentPath;
     private readonly IRenderable _renderable;
 
-    public FileMoveHandler(ICommandHandler<CommandRequest> nextHandler, CurrentPath currentPath, IRenderable renderable)
+    public FileMoveHandler(CurrentPath currentPath, IRenderable renderable)
     {
-        _nextHandler = nextHandler;
         _currentPath = currentPath;
         _renderable = renderable;
     }
@@ -21,7 +19,12 @@ public class FileMoveHandler : CommandHandlerBase<CommandRequest>
     {
         if (!request.CommandName.StartsWith("file move ", StringComparison.OrdinalIgnoreCase))
         {
-            return _nextHandler?.Handle(request);
+            if (Next != null)
+            {
+                return Next.Handle(request);
+            }
+
+            return request;
         }
 
         try
